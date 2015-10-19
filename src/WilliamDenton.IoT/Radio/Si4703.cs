@@ -107,6 +107,21 @@ namespace WilliamDenton.IoT.Radio
 
         public Si4703(int resetPinNo, int gpio2PinNo)
         {
+            //feature detection
+            if (!Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.Devices.Gpio.GpioController"))
+            {
+                throw new Exception("No gpio!");
+            }
+
+
+            //is this better?
+            if (!Windows.Foundation.Metadata.ApiInformation.IsTypePresent(typeof(GpioController).FullName))
+            {
+                throw new Exception("No gpio!");
+            }
+
+
+
             var gpio = GpioController.GetDefault();
             _resetPin = gpio.OpenPin(resetPinNo);
             _resetPin.SetDriveMode(GpioPinDriveMode.Output);
@@ -130,6 +145,7 @@ namespace WilliamDenton.IoT.Radio
 
         private async Task InitI2CBus()
         {
+
             if (_i2cComms == null)
             {
                 var settings = new I2cConnectionSettings(SI4703);
